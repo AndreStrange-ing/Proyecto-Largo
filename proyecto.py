@@ -92,7 +92,6 @@ class Sistema_Colegio:
         self._cursos = {}
         print("Bienvenido al sistema del colegio 'Aqui me Quedo' ")
 
-    # Crear curso
     def crear_curso(self):
         nombre = input("Ingrese el nombre del curso: ")
         codigo = input("Ingrese el código del curso: ")
@@ -107,3 +106,22 @@ class Sistema_Colegio:
         self._cursos[codigo] = curso
         catedratico.asignar_curso(curso)
         print("Curso creado con exito.")
+
+    def registrar_usuario(self):
+        tipo = input("Seleccione '1' para registrar a un estudiante o '2' para un categratico: ")
+        nombre = input("Nombre: ")
+        id_usuario = input("ID unico: ")
+
+        if id_usuario in self._usuarios:
+            print("El ID ya esta registrado.")
+            return
+
+        if tipo == "1":
+            self._usuarios[id_usuario] = Estudiante(nombre, id_usuario)
+        elif tipo == "2":
+            self._usuarios[id_usuario] = Catedratico(nombre, id_usuario)
+        else:
+            print("Opción invalida.")
+            return
+
+        print("Usuario registrado con exito.")
