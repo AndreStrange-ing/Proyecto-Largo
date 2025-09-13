@@ -99,21 +99,32 @@ class Curso:
 
 class Evaluacion:
     def __init__(self, titulo, tipo):
-        self._titulo = titulo
-        self._tipo = tipo
-        self._calificaciones = {} 
-        print(f"Evaluación creada: {self._titulo}")
+        self.__titulo = titulo
+        self.__tipo = tipo
+        self.__calificaciones = {}  # {id_estudiante: nota}
+        print(f"Evaluación creada: {self.__titulo}")
 
     def __str__(self):
-        return f"{self._tipo}: {self._titulo}"
+        return f"{self.__tipo}: {self.__titulo}"
+
+    # Getters
+    def get_titulo(self):
+        return self.__titulo
+
+    def get_tipo(self):
+        return self.__tipo
+
+    def get_calificaciones(self):
+        return self.__calificaciones.copy()
 
     def __del__(self):
-        print(f"Evaluación eliminada: {self._titulo}")
+        print(f"Evaluación eliminada: {self.__titulo}")
 
-class Sistema_Colegio:
+
+class SistemaColegio:
     def __init__(self):
-        self._usuarios = {}  # Encapsulamiento
-        self._cursos = {}
+        self.__usuarios = {}  # Atributo privado
+        self.__cursos = {}
         print("Bienvenido al sistema del colegio 'Aqui me Quedo' ")
 
     def crear_curso(self):
@@ -121,29 +132,29 @@ class Sistema_Colegio:
         codigo = input("Ingrese el código del curso: ")
         id_catedratico = input("ID del catedratico: ")
 
-        if id_catedratico not in self._usuarios or not isinstance(self._usuarios[id_catedratico], Catedratico):
+        if id_catedratico not in self.__usuarios or not isinstance(self.__usuarios[id_catedratico], Catedratico):
             print("Catedratico no válido.")
             return
 
-        catedratico = self._usuarios[id_catedratico]
+        catedratico = self.__usuarios[id_catedratico]
         curso = Curso(nombre, codigo, catedratico)
-        self._cursos[codigo] = curso
+        self.__cursos[codigo] = curso
         catedratico.asignar_curso(curso)
         print("Curso creado con exito.")
 
     def registrar_usuario(self):
-        tipo = input("Seleccione '1' para registrar a un estudiante o '2' para un categratico: ")
+        tipo = input("Seleccione '1' para registrar a un estudiante o '2' para un catedratico: ")
         nombre = input("Nombre: ")
         id_usuario = input("ID unico: ")
 
-        if id_usuario in self._usuarios:
+        if id_usuario in self.__usuarios:
             print("El ID ya esta registrado.")
             return
 
         if tipo == "1":
-            self._usuarios[id_usuario] = Estudiante(nombre, id_usuario)
+            self.__usuarios[id_usuario] = Estudiante(nombre, id_usuario)
         elif tipo == "2":
-            self._usuarios[id_usuario] = Catedratico(nombre, id_usuario)
+            self.__usuarios[id_usuario] = Catedratico(nombre, id_usuario)
         else:
             print("Opción invalida.")
             return
@@ -151,17 +162,24 @@ class Sistema_Colegio:
         print("Usuario registrado con exito.")
 
     def consultar_cursos(self):
-        if not self._cursos:
+        if not self.__cursos:
             print("No hay cursos registrados.")
             return
-        for curso in self._cursos.values():
+        for curso in self.__cursos.values():
             print(curso)
+
+    # Getters
+    def get_usuarios(self):
+        return self.__usuarios.copy()
+
+    def get_cursos(self):
+        return self.__cursos.copy()
 
     def __del__(self):
         print("Apagando... Aqui ya no me quedo")
 
 def main():
-    sistema = Sistema_Colegio()
+    sistema = SistemaColegio()
 
     acciones = {
         "1": sistema.crear_curso,
