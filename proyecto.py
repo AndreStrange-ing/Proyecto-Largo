@@ -85,3 +85,25 @@ class Evaluacion:
 
     def __del__(self):
         print(f"Evaluación eliminada: {self._titulo}")
+
+class Sistema_Colegio:
+    def __init__(self):
+        self._usuarios = {}  # Encapsulamiento
+        self._cursos = {}
+        print("Bienvenido al sistema del colegio 'Aqui me Quedo' ")
+
+    # Crear curso
+    def crear_curso(self):
+        nombre = input("Ingrese el nombre del curso: ")
+        codigo = input("Ingrese el código del curso: ")
+        id_catedratico = input("ID del catedratico: ")
+
+        if id_catedratico not in self._usuarios or not isinstance(self._usuarios[id_catedratico], Catedratico):
+            print("Catedratico no válido.")
+            return
+
+        catedratico = self._usuarios[id_catedratico]
+        curso = Curso(nombre, codigo, catedratico)
+        self._cursos[codigo] = curso
+        catedratico.asignar_curso(curso)
+        print("Curso creado con exito.")
