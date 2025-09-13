@@ -76,7 +76,7 @@ class Curso:
         print(f"Curso creado: {self.__nombre}")
 
     def __str__(self):
-        return f"Curso: {self.__nombre} ({self.__codigo}) - Catedratico: {self.__catedratico.get_nombre()}"
+        return f"Curso: {self.__nombre} - Seccion: ({self.__codigo}) - Catedratico: {self.__catedratico.get_nombre()}"
 
     # Getters
     def get_nombre(self):
@@ -101,7 +101,7 @@ class Evaluacion:
     def __init__(self, titulo, tipo):
         self.__titulo = titulo
         self.__tipo = tipo
-        self.__calificaciones = {}  # {id_estudiante: nota}
+        self.__calificaciones = {} 
         print(f"Evaluación creada: {self.__titulo}")
 
     def __str__(self):
@@ -129,7 +129,7 @@ class SistemaColegio:
 
     def crear_curso(self):
         nombre = input("Ingrese el nombre del curso: ")
-        codigo = input("Ingrese el código del curso: ")
+        seccion = input("Ingrese la seccion del curso: ")
         id_catedratico = input("ID del catedratico: ")
 
         if id_catedratico not in self.__usuarios or not isinstance(self.__usuarios[id_catedratico], Catedratico):
@@ -137,8 +137,8 @@ class SistemaColegio:
             return
 
         catedratico = self.__usuarios[id_catedratico]
-        curso = Curso(nombre, codigo, catedratico)
-        self.__cursos[codigo] = curso
+        curso = Curso(nombre, seccion, catedratico)
+        self.__cursos[seccion] = curso
         catedratico.asignar_curso(curso)
         print("Curso creado con exito.")
 
