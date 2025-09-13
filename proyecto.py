@@ -134,4 +134,33 @@ class Sistema_Colegio:
             print(curso)
 
     def __del__(self):
-        print("Sistema Académico apagado.")
+        print("Apagando... Aqui ya no me quedo")
+
+def main():
+    sistema = Sistema_Colegio()
+
+    acciones = {
+        "1": sistema.crear_curso,
+        "2": sistema.registrar_usuario,
+        "3": sistema.consultar_cursos,
+        "0": exit
+    }
+
+    while True:
+        print("\nEliga una de las siguientes opciones: ")
+        print("1. Crear curso")
+        print("2. Registrar usuario")
+        print("3. Consultar cursos")
+        print("0. Salir")
+
+        opcion = input("Seleccione una opción: ")
+        accion = acciones.get(opcion)
+
+        if accion:
+            accion()
+        else:
+            print("Opción inválida.")
+
+
+if __name__ == "__main__":
+    main()
