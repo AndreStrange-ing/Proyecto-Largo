@@ -29,49 +29,73 @@ class Usuario(ABC):
 class Estudiante(Usuario):
     def __init__(self, nombre, id_usuario):
         super().__init__(nombre, id_usuario) 
-        self._cursos = []  # Encapsulamiento
-        print(f"Estudiante registrado: {self._nombre}")
+        self.__cursos = []  # Atributo privado
+        print(f"Estudiante registrado: {self.get_nombre()}")
 
     def mostrar_info(self):
         # Polimorfismo
-        return f"Estudiante: {self._nombre} (ID: {self._id_usuario})"
+        return f"Estudiante: {self.get_nombre()} (ID: {self.get_id()})"
 
     def inscribir_curso(self, curso):
-        self._cursos.append(curso)
+        self.__cursos.append(curso)
+
+    def get_cursos(self):
+        return self.__cursos[:]  # Devolvemos copia segura
 
     def __del__(self):
-        print(f"Estudiante eliminado: {self._nombre}")
+        print(f"Estudiante eliminado: {self.get_nombre()}")
+
 
 class Catedratico(Usuario):
     def __init__(self, nombre, id_usuario):
-        super().__init__(nombre, id_usuario)  # Constructor padre
-        self._cursos_daods = []  # Encapsulamiento
-        print(f"Catedratico registrado: {self._nombre}")
+        super().__init__(nombre, id_usuario)
+        self.__cursos_dictados = []  # Atributo privado
+        print(f"Catedratico registrado: {self.get_nombre()}")
 
     def mostrar_info(self):
         # Polimorfismo
-        return f"Catedratico: {self._nombre} (ID: {self._id_usuario})"
+        return f"Catedratico: {self.get_nombre()} (ID: {self.get_id()})"
 
     def asignar_curso(self, curso):
-        self._cursos_daods.append(curso)
+        self.__cursos_dictados.append(curso)
+
+    def get_cursos_dictados(self):
+        return self.__cursos_dictados[:]
 
     def __del__(self):
-        print(f"Catedratico eliminado: {self._nombre}")
+        print(f"Catedratico eliminado: {self.get_nombre()}")
+
 
 class Curso:
     def __init__(self, nombre, codigo, catedratico):
-        self._nombre = nombre
-        self._codigo = codigo
-        self._catedratico = catedratico
-        self._estudiantes = []
-        self._evaluaciones = []
-        print(f"Curso creado: {self._nombre}")
+        self.__nombre = nombre
+        self.__codigo = codigo
+        self.__catedratico = catedratico
+        self.__estudiantes = []
+        self.__evaluaciones = []
+        print(f"Curso creado: {self.__nombre}")
 
     def __str__(self):
-        return f"Curso: {self._nombre} ({self._codigo}) - Catedratico: {self._catedratico.get_nombre()}"
+        return f"Curso: {self.__nombre} ({self.__codigo}) - Catedratico: {self.__catedratico.get_nombre()}"
+
+    # Getters
+    def get_nombre(self):
+        return self.__nombre
+
+    def get_codigo(self):
+        return self.__codigo
+
+    def get_catedratico(self):
+        return self.__catedratico
+
+    def get_estudiantes(self):
+        return self.__estudiantes[:]
+
+    def get_evaluaciones(self):
+        return self.__evaluaciones[:]
 
     def __del__(self):
-        print(f"Curso eliminado: {self._nombre}")
+        print(f"Curso eliminado: {self.__nombre}")
 
 class Evaluacion:
     def __init__(self, titulo, tipo):
