@@ -26,5 +26,20 @@ class Usuario(ABC):
         print(f"Usuario eliminado: {self._nombre}")
 
 
+class Estudiante(Usuario):
+    def __init__(self, nombre, id_usuario):
+        super().__init__(nombre, id_usuario) 
+        self._cursos = []  # Encapsulamiento
+        print(f"Estudiante registrado: {self._nombre}")
+
+    def mostrar_info(self):
+        # Polimorfismo
+        return f"Estudiante: {self._nombre} (ID: {self._id_usuario})"
+
+    def inscribir_curso(self, curso):
+        self._cursos.append(curso)
+
+    def __del__(self):
+        print(f"Estudiante eliminado: {self._nombre}")
 
 
