@@ -42,4 +42,18 @@ class Estudiante(Usuario):
     def __del__(self):
         print(f"Estudiante eliminado: {self._nombre}")
 
+class Catedratico(Usuario):
+    def __init__(self, nombre, id_usuario):
+        super().__init__(nombre, id_usuario)  # Constructor padre
+        self._cursos_daods = []  # Encapsulamiento
+        print(f"Catedratico registrado: {self._nombre}")
 
+    def mostrar_info(self):
+        # Polimorfismo
+        return f"Catedratico: {self._nombre} (ID: {self._id_usuario})"
+
+    def asignar_curso(self, curso):
+        self._cursos_daods.append(curso)
+
+    def __del__(self):
+        print(f"Catedratico eliminado: {self._nombre}")
