@@ -58,6 +58,21 @@ class Catedratico(Usuario):
     def __del__(self):
         print(f"Catedratico eliminado: {self._nombre}")
 
+class Curso:
+    def __init__(self, nombre, codigo, catedratico):
+        self._nombre = nombre
+        self._codigo = codigo
+        self._catedratico = catedratico
+        self._estudiantes = []
+        self._evaluaciones = []
+        print(f"Curso creado: {self._nombre}")
+
+    def __str__(self):
+        return f"Curso: {self._nombre} ({self._codigo}) - Catedratico: {self._catedratico.get_nombre()}"
+
+    def __del__(self):
+        print(f"Curso eliminado: {self._nombre}")
+
 class Evaluacion:
     def __init__(self, titulo, tipo):
         self._titulo = titulo
