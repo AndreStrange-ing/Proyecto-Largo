@@ -125,3 +125,13 @@ class Sistema_Colegio:
             return
 
         print("Usuario registrado con exito.")
+
+    def consultar_cursos(self):
+        if not self._cursos:
+            print("No hay cursos registrados.")
+            return
+        for curso in self._cursos.values():
+            print(curso)
+
+    def __del__(self):
+        print("Sistema Académico apagado.")
