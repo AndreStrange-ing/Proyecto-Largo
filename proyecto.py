@@ -36,8 +36,17 @@ class Estudiante(Usuario):
         # Polimorfismo
         return f"Estudiante: {self.get_nombre()} (ID: {self.get_id()})"
 
-    def inscribir_curso(self, curso):
+    def esta_inscrito(self, codigo_curso): #verificacion de duplicados
+        for curso in self.__cursos:
+            if curso.get_codigo() == codigo_curso:
+                return True
+        return False
+    
+    def inscribir_curso(self, curso): #true si se agrego false si ya esta inscrito
+        if self.esta_inscrito(curso.get_codigo()):
+            return False
         self.__cursos.append(curso)
+        return True
 
     def get_cursos(self):
         return self.__cursos[:]  # Devolvemos copia segura
@@ -77,12 +86,21 @@ class Curso:
 
     def __str__(self):
         return f"Curso: {self.__nombre} - Seccion: ({self.__codigo}) - Catedratico: {self.__catedratico.get_nombre()}"
-    #Metodos controlados para encapsulamiento
+    #Metodos controlados para encapsulamiento y control de duplicados
     def inscribir_estudiante(self, estudiante):
+        if self.esta_inscrito(estudiante.get_id()):
+            return False
         self.__estudiantes.append(estudiante)
+        return True
 
     def agregar_evaluacion(self, evaluacion):
-        self.__evaluaciones.append(evaluacion) 
+        self.__evaluaciones.append(evaluacion)
+
+    def esta_inscrito(self, id_estudiante): #control de duplicados, si ya esta esta estudiante en la lista
+        for est in self.__estudiantes:
+            if est.get_id() == id_estudiante:
+                return True
+        return False 
 
     # Getters
     def get_nombre(self):
@@ -203,7 +221,7 @@ class SistemaColegio:
             print("ID de estudiante no válido.")
             return
 
-        seccion = input("Ingrese la sección del curso: ")
+        seccion = input("Ingrese la sección del curso: ").strip()
         # Validar curso
         if seccion not in self.__cursos:
             print("Sección de curso no válida.")
@@ -212,10 +230,19 @@ class SistemaColegio:
         estudiante = self.__usuarios[id_estudiante]
         curso = self.__cursos[seccion]
 
-        # Inscribir estudiante en curso
-        estudiante.inscribir_curso(curso)
-        curso.inscribir_estudiante(estudiante)  
-        print(f"Estudiante {estudiante.get_nombre()} inscrito en el curso {curso.get_nombre()} exitosamente.")
+        # Verificar duplicado antes de intentar inscribir
+        if estudiante.esta_inscrito(curso.get_codigo()) or curso.esta_inscrito(estudiante.get_id()):
+            print(f"El estudiante {estudiante.get_nombre()} (ID: {estudiante.get_id()}) ya está inscrito en {curso.get_nombre()} (Sección {curso.get_codigo()}).")
+            return
+    
+        # Inscribir estudiante en ambos lados
+        agregado_est = estudiante.inscribir_curso(curso)
+        agregado_cur = curso.inscribir_estudiante(estudiante)
+
+        if agregado_est and agregado_cur:
+            print(f"Estudiante {estudiante.get_nombre()} (ID: {estudiante.get_id()}) inscrito en {curso.get_nombre()} (Sección {curso.get_codigo()}) exitosamente.")
+        else:
+            print("no se pudo completar la inscripción.")
 #--------------------------------------------------
     def consultar_cursos(self):
         if not self.__cursos:
