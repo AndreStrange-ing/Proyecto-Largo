@@ -77,6 +77,12 @@ class Curso:
 
     def __str__(self):
         return f"Curso: {self.__nombre} - Seccion: ({self.__codigo}) - Catedratico: {self.__catedratico.get_nombre()}"
+    #Metodos controlados para encapsulamiento
+    def inscribir_estudiante(self, estudiante):
+        self.__estudiantes.append(estudiante)
+
+    def agregar_evaluacion(self, evaluacion):
+        self.__evaluaciones.append(evaluacion) 
 
     # Getters
     def get_nombre(self):
@@ -126,7 +132,7 @@ class SistemaColegio:
         self.__usuarios = {}  # Atributo privado
         self.__cursos = {}
         print("Bienvenido al sistema del colegio 'Aqui me Quedo' ")
-
+#------------------------------------------------------------
     def crear_curso(self):
         nombre = input("Ingrese el nombre del curso: ")
         seccion = input("Ingrese la seccion del curso: ")
@@ -142,6 +148,33 @@ class SistemaColegio:
         catedratico.asignar_curso(curso)
         print("Curso creado con exito.")
 
+    def eliminar_curso(self):
+        seccion = input("Ingrese la sección del curso a eliminar: ")
+        if seccion not in self.__cursos:
+            print("Curso no encontrado.")
+            return
+        del self.__cursos[seccion]
+        print("Curso eliminado con éxito.")
+
+    def menu_cursos(self):
+        acciones = {
+            "1": self.crear_curso,
+            "2": self.eliminar_curso,
+        }
+        while True:
+            print("\nAdministrador de cursos")
+            print("1. Crear curso")
+            print("2. Eliminar curso")
+            print("0. Volver")
+            opcion = input("Seleccione una opción: ")
+
+            if opcion == "0":
+                break
+            elif opcion in acciones:
+                acciones[opcion]()  #puntero a función
+            else:
+                print("Opción inválida.")
+#------------------------------------------------------------------
     def registrar_usuario(self):
         tipo = input("Seleccione '1' para registrar a un estudiante o '2' para un catedratico: ")
         nombre = input("Nombre: ")
@@ -160,13 +193,7 @@ class SistemaColegio:
             return
 
         print("Usuario registrado con exito.")
-
-    def consultar_cursos(self):
-        if not self.__cursos:
-            print("No hay cursos registrados.")
-            return
-        for curso in self.__cursos.values():
-            print(curso)
+#---------------------------------------------------------
 
     def inscribir_estudiante_curso(self):
         id_estudiante = input("Ingrese el ID del estudiante para su inscripcion: ")
@@ -177,7 +204,6 @@ class SistemaColegio:
             return
 
         seccion = input("Ingrese la sección del curso: ")
-
         # Validar curso
         if seccion not in self.__cursos:
             print("Sección de curso no válida.")
@@ -188,16 +214,59 @@ class SistemaColegio:
 
         # Inscribir estudiante en curso
         estudiante.inscribir_curso(curso)
-        curso.get_estudiantes().append(estudiante)  
+        curso.inscribir_estudiante(estudiante)  
         print(f"Estudiante {estudiante.get_nombre()} inscrito en el curso {curso.get_nombre()} exitosamente.")
+#--------------------------------------------------
+    def consultar_cursos(self):
+        if not self.__cursos:
+            print("No hay cursos registrados.")
+            return
+        for curso in self.__cursos.values():
+            print(curso)
 
-    # Getters
-    def get_usuarios(self):
-        return self.__usuarios.copy()
+    def consultar_usuarios(self):
+        if not self.__usuarios:
+            print("No hay usuarios registrados.")
+            return
+        for usuario in self.__usuarios.values():
+            print(usuario.mostrar_info())
 
-    def get_cursos(self):
-        return self.__cursos.copy()
+    def consultar_estudiantes_por_curso(self):
+        seccion = input("Ingrese la sección del curso: ")
+        if seccion not in self.__cursos:
+            print("Curso no encontrado.")
+            return
+        curso = self.__cursos[seccion]
+        estudiantes = curso.get_estudiantes()
+        if not estudiantes:
+            print("No hay estudiantes inscritos en este curso.")
+        else:
+            for est in estudiantes:
+                print(est.mostrar_info())
+    
+    def menu_consultas(self):
+        acciones = {
+            "1": self.consultar_cursos,
+            "2": self.consultar_usuarios,
+            "3": self.consultar_estudiantes_por_curso,
+        }
+        while True:
+            print("\nMenu de consultas")
+            print("1. Consultar cursos")
+            print("2. Consultar usuarios")
+            print("3. Consultar estudiantes por curso")
+            print("0. Volver")
+            opcion = input("Seleccione una opción: ")
 
+            if opcion == "0":
+                break
+            elif opcion in acciones:
+                acciones[opcion]()  #puntero a función
+            else:
+                print("Opcion invalida.")
+
+#-----------------------------------------
+  
     def __del__(self):
         print("Apagando... Aqui ya no me quedo")
 
@@ -206,27 +275,27 @@ def main():
 
     acciones = {
         "1": menu.registrar_usuario,
-        "2": menu.crear_curso,
-        "3": menu.consultar_cursos,
-        "4": menu.inscribir_estudiante_curso,
-        "0": exit
+        "2": menu.menu_cursos,
+        "3": menu.inscribir_estudiante_curso,
+        "4": menu.menu_consultas,
     }
 
     while True:
         print("\nEliga una de las siguientes opciones: ")
-        print("1. Registrar usuario")
-        print("2. Crear curso")
-        print("3. Consultar cursos")
-        print("4. Inscribir estudiante al curso")
+        print("1. Registrar usuarios")
+        print("2. Administrar cursos")
+        print("3. Inscribir estudiante al curso")
+        print("4. Consultas de informacion")
         print("0. Salir")
 
         opcion = input("Seleccione una opción: ")
-        accion = acciones.get(opcion)
-
-        if accion:
-            accion()
+        
+        if opcion == "0":
+            break
+        elif opcion in acciones:
+            acciones[opcion]()  
         else:
-            print("Opción inválida.")
+            print("Opcion invalida.")
 
 
 if __name__ == "__main__":
