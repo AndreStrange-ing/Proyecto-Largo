@@ -168,6 +168,29 @@ class SistemaColegio:
         for curso in self.__cursos.values():
             print(curso)
 
+    def inscribir_estudiante_curso(self):
+        id_estudiante = input("Ingrese el ID del estudiante para su inscripcion: ")
+
+        # Validar existencia y tipo
+        if id_estudiante not in self.__usuarios or not isinstance(self.__usuarios[id_estudiante], Estudiante):
+            print("ID de estudiante no válido.")
+            return
+
+        seccion = input("Ingrese la sección del curso: ")
+
+        # Validar curso
+        if seccion not in self.__cursos:
+            print("Sección de curso no válida.")
+            return
+
+        estudiante = self.__usuarios[id_estudiante]
+        curso = self.__cursos[seccion]
+
+        # Inscribir estudiante en curso
+        estudiante.inscribir_curso(curso)
+        curso.get_estudiantes().append(estudiante)  
+        print(f"Estudiante {estudiante.get_nombre()} inscrito en el curso {curso.get_nombre()} exitosamente.")
+
     # Getters
     def get_usuarios(self):
         return self.__usuarios.copy()
@@ -179,12 +202,13 @@ class SistemaColegio:
         print("Apagando... Aqui ya no me quedo")
 
 def main():
-    sistema = SistemaColegio()
+    menu = SistemaColegio()
 
     acciones = {
-        "1": sistema.crear_curso,
-        "2": sistema.registrar_usuario,
-        "3": sistema.consultar_cursos,
+        "1": menu.crear_curso,
+        "2": menu.registrar_usuario,
+        "3": menu.consultar_cursos,
+        "4": menu.inscribir_estudiante_curso,
         "0": exit
     }
 
@@ -193,6 +217,7 @@ def main():
         print("1. Crear curso")
         print("2. Registrar usuario")
         print("3. Consultar cursos")
+        print("4. Inscribir estudiante al curso")
         print("0. Salir")
 
         opcion = input("Seleccione una opción: ")
