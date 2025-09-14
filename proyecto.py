@@ -205,8 +205,8 @@ def main():
     menu = SistemaColegio()
 
     acciones = {
-        "1": menu.crear_curso,
-        "2": menu.registrar_usuario,
+        "1": menu.registrar_usuario,
+        "2": menu.crear_curso,
         "3": menu.consultar_cursos,
         "4": menu.inscribir_estudiante_curso,
         "0": exit
@@ -214,8 +214,8 @@ def main():
 
     while True:
         print("\nEliga una de las siguientes opciones: ")
-        print("1. Crear curso")
-        print("2. Registrar usuario")
+        print("1. Registrar usuario")
+        print("2. Crear curso")
         print("3. Consultar cursos")
         print("4. Inscribir estudiante al curso")
         print("0. Salir")
