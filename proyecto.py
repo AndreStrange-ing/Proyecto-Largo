@@ -465,7 +465,7 @@ class SistemaColegio:
                 print("Opción inválida.")
 #---------------------------------------------------------
     def reporte_promedio_por_estudiante(self):
-        codigo = input("Ingrese el código/sección del curso: ")
+        codigo = input("Ingrese el seccion del curso: ")
         if codigo not in self.__cursos:
             print("Curso no encontrado.")
             return
