@@ -94,13 +94,35 @@ class Curso:
         return True
 
     def agregar_evaluacion(self, evaluacion):
+        for ev in self.__evaluaciones:
+            if ev.get_titulo().lower() == evaluacion.get_titulo().lower():
+                print(f"Ya existe una evaluación con el título '{evaluacion.get_titulo()}'.")
+                return False
         self.__evaluaciones.append(evaluacion)
+        return True
+    
+    def eliminar_evaluacion(self, titulo):
+        for ev in self.__evaluaciones:
+            if ev.get_titulo().lower() == titulo.lower():
+                self.__evaluaciones.remove(ev)
+                print(f"Evaluacion '{titulo}' eliminada con éxito.")
+                return True
+        print(f"No se encontró una evaluación con el título '{titulo}'.")
+        return False
 
     def esta_inscrito(self, id_estudiante): #control de duplicados, si ya esta esta estudiante en la lista
         for est in self.__estudiantes:
             if est.get_id() == id_estudiante:
                 return True
         return False 
+    
+    def consultar_evaluaciones(self):
+        if not self.__evaluaciones:
+            print("No hay evaluaciones para este curso.")
+            return
+        print(f"\nEvaluaciones del curso {self.__nombre} (Sección {self.__codigo}):")
+        for ev in self.__evaluaciones:
+            print(f"- {ev}")
 
     # Getters
     def get_nombre(self):
@@ -126,10 +148,14 @@ class Evaluacion:
         self.__titulo = titulo
         self.__tipo = tipo
         self.__calificaciones = {} 
-        print(f"Evaluación creada: {self.__titulo}")
+        print(f"Se creo evaluacion: {self.__titulo}")
 
     def __str__(self):
         return f"{self.__tipo}: {self.__titulo}"
+    
+    def asignar_calificacion(self, id_estudiante, nota):
+        self.__calificaciones[id_estudiante] = nota
+        print(f"Calificacion asignada a estudiante {id_estudiante} -> {nota}")
 
     # Getters
     def get_titulo(self):
@@ -142,7 +168,7 @@ class Evaluacion:
         return self.__calificaciones.copy()
 
     def __del__(self):
-        print(f"Evaluación eliminada: {self.__titulo}")
+        print(f"Se elimino evaluacion: {self.__titulo}")
 
 
 class SistemaColegio:
@@ -158,6 +184,10 @@ class SistemaColegio:
 
         if id_catedratico not in self.__usuarios or not isinstance(self.__usuarios[id_catedratico], Catedratico):
             print("Catedratico no válido.")
+            return
+        
+        if seccion in self.__cursos:  #Evitar duplicados 2.0
+            print("Ya existe un curso con esa sección.")
             return
 
         catedratico = self.__usuarios[id_catedratico]
@@ -270,18 +300,69 @@ class SistemaColegio:
         else:
             for est in estudiantes:
                 print(est.mostrar_info())
+
+    def consultar_evaluaciones(self):
+        seccion = input("Ingrese la seccion del curso: ")
+        if seccion not in self.__cursos:
+            print("Curso no encontrado.")
+            return
+
+        curso = self.__cursos[seccion]
+        curso.consultar_evaluaciones()
+
+    def consultar_calificaciones(self):
+        seccion = input("Ingrese la sección del curso: ")
+        if seccion not in self.__cursos:
+            print("Curso no encontrado.")
+            return
+        
+        curso = self.__cursos[seccion]
+        evaluaciones = curso.get_evaluaciones()
+        if not evaluaciones:
+            print("No hay evaluaciones registradas en este curso.")
+            return
+
+        print("\nEvaluaciones disponibles:")
+        for i, ev in enumerate(evaluaciones, start=1):
+            print(f"{i}. {ev}")
+
+        try:
+            opcion = int(input("Seleccione el número de la evaluación: "))
+            if opcion < 1 or opcion > len(evaluaciones):
+                print("Opción inválida.")
+                return
+        except ValueError:
+            print("Entrada inválida.")
+            return
+
+        evaluacion = evaluaciones[opcion - 1]
+        calificaciones = evaluacion.get_calificaciones()
+
+        if not calificaciones:
+            print("No hay calificaciones registradas en esta evaluación.")
+            return
+
+        print(f"\nCalificaciones para {evaluacion.get_titulo()} ({evaluacion.get_tipo()}):")
+        for id_est, nota in calificaciones.items():
+            estudiante = self.__usuarios.get(id_est)
+            nombre = estudiante.get_nombre() if estudiante else "Desconocido"
+            print(f"- {nombre} (ID: {id_est}) -> {nota}")
     
     def menu_consultas(self):
         acciones = {
             "1": self.consultar_cursos,
             "2": self.consultar_usuarios,
             "3": self.consultar_estudiantes_por_curso,
+            "4": self.consultar_evaluaciones,
+            "5": self.consultar_calificaciones
         }
         while True:
             print("\nMenu de consultas")
             print("1. Consultar cursos")
             print("2. Consultar usuarios")
             print("3. Consultar estudiantes por curso")
+            print("4. Consultar evaluaciones por curso")
+            print("5. Consultar calificacion")
             print("0. Volver")
             opcion = input("Seleccione una opción: ")
 
@@ -292,10 +373,228 @@ class SistemaColegio:
             else:
                 print("Opcion invalida.")
 
-#-----------------------------------------
+#-------------------------------------------------------------
+    def crear_evaluacion(self):
+        seccion = input("Ingrese la seccion del curso: ")
+        if seccion not in self.__cursos:
+            print("Curso no encontrado.")
+            return
+
+        curso = self.__cursos[seccion]
+        titulo = input("Ingrese el titulo de la evaluacion: ")
+        tipo = input("Ingrese el tipo de evaluación (examen, tarea, etc.): ")
+
+        evaluacion = Evaluacion(titulo, tipo)
+        if curso.agregar_evaluacion(evaluacion):
+            print("Evaluación creada exitosamente.")
+
+    def eliminar_evaluacion(self):
+        seccion = input("Ingrese la sección del curso: ")
+        if seccion not in self.__cursos:
+            print("Curso no existe.")
+            return
+
+        curso = self.__cursos[seccion]
+        titulo = input("Cual es el titulo de la evaluacion a eliminar: ")
+        curso.eliminar_evaluacion(titulo)
   
+    def registrar_calificacion(self):
+        seccion = input("Ingrese la sección del curso: ")
+        if seccion not in self.__cursos:
+            print("Curso no encontrado.")
+            return
+        
+        curso = self.__cursos[seccion]
+        evaluaciones = curso.get_evaluaciones()
+        if not evaluaciones:
+            print("No hay evaluaciones registradas en este curso.")
+            return
+
+        print("\nEvaluaciones disponibles:")
+        for i, ev in enumerate(evaluaciones, start=1):
+            print(f"{i}. {ev}")
+        
+        try:
+            opcion = int(input("Seleccione el número de la evaluación: "))
+            if opcion < 1 or opcion > len(evaluaciones):
+                print("Opción inválida.")
+                return
+        except ValueError:
+            print("Entrada inválida.")
+            return
+
+        evaluacion = evaluaciones[opcion - 1]
+
+        id_estudiante = input("Ingrese el ID del estudiante: ")
+        if id_estudiante not in self.__usuarios or not isinstance(self.__usuarios[id_estudiante], Estudiante):
+            print("Estudiante no válido.")
+            return
+
+        if not curso.esta_inscrito(id_estudiante):
+            print("El estudiante no está inscrito en este curso.")
+            return
+
+        try:
+            nota = float(input("Ingrese la calificación: "))
+        except ValueError:
+            print("La calificación debe ser un número.")
+            return
+
+        evaluacion.asignar_calificacion(id_estudiante, nota)
+
+
+    def menu_evaluaciones(self):
+        acciones = {
+            "1": self.crear_evaluacion,
+            "2": self.eliminar_evaluacion,
+            "3": self.registrar_calificacion
+        }
+        while True:
+            print("\nAdministrador de evaluaciones")
+            print("1. Crear evaluación")
+            print("2. Eliminar evaluacion")
+            print("3. Registrar calificacion a evaluacion")
+            print("0. Volver")
+            opcion = input("Seleccione una opción: ")
+
+            if opcion == "0":
+                break
+            elif opcion in acciones:
+                acciones[opcion]()  # puntero a función
+            else:
+                print("Opción inválida.")
+#---------------------------------------------------------
+    def reporte_promedio_por_estudiante(self):
+        codigo = input("Ingrese el código/sección del curso: ")
+        if codigo not in self.__cursos:
+            print("Curso no encontrado.")
+            return
+
+        curso = self.__cursos[codigo]
+        estudiantes = curso.get_estudiantes()
+        evaluaciones = curso.get_evaluaciones()
+
+        if not estudiantes:
+            print("No hay estudiantes inscritos en este curso.")
+            return
+        if not evaluaciones:
+            print("No hay evaluaciones en este curso.")
+            return
+
+        print(f"\nPromedio por estudiante en {curso.get_nombre()} ({curso.get_codigo()})")
+        for est in estudiantes:
+            suma = 0
+            conteo = 0
+            for ev in evaluaciones:
+                calificaciones = ev.get_calificaciones()
+                if est.get_id() in calificaciones:
+                    suma += calificaciones[est.get_id()]
+                    conteo += 1
+            if conteo > 0:
+                promedio = suma / conteo
+                print(f"{est.get_nombre()} (ID: {est.get_id()}): {promedio:.2f}")
+            else:
+                print(f"{est.get_nombre()} (ID: {est.get_id()}): Sin calificaciones registradas")
+
+    def reporte_promedio_curso(self):
+        codigo = input("Ingrese la seccion del curso: ")
+        if codigo not in self.__cursos:
+            print("Curso no encontrado.")
+            return
+
+        curso = self.__cursos[codigo]
+        evaluaciones = curso.get_evaluaciones()
+
+        if not evaluaciones:
+            print("No hay evaluaciones en este curso.")
+            return
+
+        suma_total = 0
+        conteo_total = 0
+
+        for ev in evaluaciones:
+            for nota in ev.get_calificaciones().values():
+                suma_total += nota
+                conteo_total += 1
+
+        if conteo_total == 0:
+            print("No hay calificaciones registradas en este curso.")
+            return
+
+        promedio_curso = suma_total / conteo_total
+        print(f"\nPromedio general del curso {curso.get_nombre()} ({curso.get_codigo()}): {promedio_curso:.2f}")
+    
+    def reporte_top_estudiantes(self):
+        codigo = input("Ingrese el código/sección del curso: ")
+        if codigo not in self.__cursos:
+            print("Curso no encontrado.")
+            return
+            
+        curso = self.__cursos[codigo]
+        estudiantes = curso.get_estudiantes()
+        evaluaciones = curso.get_evaluaciones()
+        
+        if not estudiantes or not evaluaciones:
+            print("No hay estudiantes o evaluaciones en este curso.")
+            return
+                
+        promedios = {}
+        for est in estudiantes:
+            suma, conteo = 0, 0
+            for ev in evaluaciones:
+                calificaciones = ev.get_calificaciones()
+                if est.get_id() in calificaciones:
+                    suma += calificaciones[est.get_id()]
+                    conteo += 1
+            if conteo > 0:
+                promedios[est] = suma / conteo
+                
+        if not promedios:
+            print("No hay calificaciones registradas.")
+            return
+        
+        top = []
+        promedios_items = list(promedios.items())
+        while len(top) < 3 and promedios_items:
+            max_est = promedios_items[0]
+            for item in promedios_items:
+                if item[1] > max_est[1]:
+                    max_est = item
+            top.append(max_est)
+            promedios_items.remove(max_est)
+            
+        print(f"\nTop 3 estudiantes estrellitas en {curso.get_nombre()} ")
+        for est, prom in top:
+            print(f"{est.get_nombre()} (ID: {est.get_id()}): {prom:.2f}")
+
+
+
+    def menu_reportes(self):
+        acciones = {
+            "1": self.reporte_promedio_por_estudiante,
+            "2": self.reporte_promedio_curso,
+            "3": self.reporte_top_estudiantes
+        }
+        while True:
+            print("\nMenú de reportes")
+            print("1. Promedio por estudiante")
+            print("2. Promedio general del curso")
+            print("3. Mejores 3 estudiantes por curso")
+            print("0. Volver")
+            opcion = input("Seleccione una opción: ")
+
+            if opcion == "0":
+                break
+            elif opcion in acciones:
+                acciones[opcion]()  # puntero a función
+            else:
+                print("Opción invalida.")
+
+#---------------------------------------------------------
     def __del__(self):
         print("Apagando... Aqui ya no me quedo")
+
+#---------------------------------------------------------
 
 def main():
     menu = SistemaColegio()
@@ -305,6 +604,8 @@ def main():
         "2": menu.menu_cursos,
         "3": menu.inscribir_estudiante_curso,
         "4": menu.menu_consultas,
+        "5": menu.menu_evaluaciones,
+        "6": menu.menu_reportes
     }
 
     while True:
@@ -313,6 +614,8 @@ def main():
         print("2. Administrar cursos")
         print("3. Inscribir estudiante al curso")
         print("4. Consultas de informacion")
+        print("5. Administrar evaluaciones")
+        print("6. Reportes de notas")
         print("0. Salir")
 
         opcion = input("Seleccione una opción: ")
