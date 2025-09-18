@@ -627,6 +627,4 @@ def main():
         else:
             print("Opcion invalida.")
 
-
-if __name__ == "__main__":
-    main()
+main()
